@@ -1,0 +1,265 @@
+openapi: 3.0.0
+info:
+  title: VAPT VUPT API
+  version: 1.0.0
+  description: Documentação completa da API REST para o sistema de gestão logística.
+servers:
+  - url: http://localhost:8080
+    description: Servidor Local (Dev)
+
+paths:
+  # ==========================================
+  # MÓDULO DE AUTENTICAÇÃO
+  # ==========================================
+  /api/v1/auth/register:
+    post:
+      summary: Registro de novo usuário (DRIVER ou CARRIER)
+      tags: [Auth]
+      responses:
+        201:
+          description: Usuário criado com sucesso
+  /api/v1/auth/login:
+    post:
+      summary: Autenticação de usuário
+      tags: [Auth]
+      responses:
+        200:
+          description: Retorna Access Token (15min) e Refresh Token (7d)
+  /api/v1/auth/refresh:
+    post:
+      summary: Atualiza o Access Token usando o Refresh Token
+      tags: [Auth]
+      responses:
+        200:
+          description: Novo Access Token gerado
+  /api/v1/auth/logout:
+    post:
+      summary: Invalida o Refresh Token atual
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Logout realizado com sucesso
+
+  # ==========================================
+  # MÓDULO DE MOTORISTAS E VEÍCULOS
+  # ==========================================
+  /api/v1/drivers/me:
+    get:
+      summary: Retorna o perfil do motorista autenticado
+      tags: [Drivers]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Dados do perfil
+    put:
+      summary: Atualiza os dados do perfil do motorista
+      tags: [Drivers]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Perfil atualizado
+  /api/v1/drivers:
+    get:
+      summary: Listagem de motoristas (Acesso Admin/Transportadora)
+      tags: [Drivers]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista paginada de motoristas
+  /api/v1/drivers/{id}/availability:
+    put:
+      summary: Altera o status de disponibilidade do motorista (online/offline)
+      tags: [Drivers]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Status de disponibilidade atualizado
+  /api/v1/drivers/{id}/location:
+    put:
+      summary: Atualiza a geolocalização atual do motorista
+      tags: [Drivers]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Localização atualizada
+  /api/v1/drivers/me/vehicles:
+    post:
+      summary: Cadastro de um novo veículo vinculado ao motorista
+      tags: [Drivers]
+      security:
+        - bearerAuth: []
+      responses:
+        201:
+          description: Veículo cadastrado
+  /api/v1/drivers/me/documents:
+    get:
+      summary: Lista todos os documentos do motorista autenticado
+      tags: [Documents]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista de documentos e seus status
+    post:
+      summary: Upload de documento (multipart/form-data)
+      tags: [Documents]
+      security:
+        - bearerAuth: []
+      responses:
+        201:
+          description: Upload realizado e documento em análise
+  /api/v1/drivers/{id}/documents/{docId}/validate:
+    patch:
+      summary: Valida ou rejeita um documento (Acesso Admin/Gerenciadora de Risco)
+      tags: [Documents]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Status do documento atualizado
+
+  # ==========================================
+  # MÓDULO DE TRANSPORTADORAS
+  # ==========================================
+  /api/v1/carriers/me:
+    get:
+      summary: Retorna o perfil da transportadora autenticada
+      tags: [Carriers]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Dados da transportadora
+    put:
+      summary: Atualiza o perfil da transportadora
+      tags: [Carriers]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Perfil atualizado
+  /api/v1/carriers/{id}:
+    get:
+      summary: Retorna dados básicos públicos de uma transportadora
+      tags: [Carriers]
+      responses:
+        200:
+          description: Dados básicos da transportadora
+
+  # ==========================================
+  # MÓDULO DE CARGAS
+  # ==========================================
+  /api/v1/cargos:
+    post:
+      summary: Criação de uma nova carga pela transportadora
+      tags: [Cargos]
+      security:
+        - bearerAuth: []
+      responses:
+        201:
+          description: Carga criada
+    get:
+      summary: Listagem de cargas com filtros e paginação
+      tags: [Cargos]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista paginada de cargas
+  /api/v1/cargos/{id}:
+    get:
+      summary: Retorna os detalhes de uma carga específica
+      tags: [Cargos]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Detalhes da carga
+    put:
+      summary: Atualiza os dados de uma carga (antes do matching)
+      tags: [Cargos]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Carga atualizada
+    delete:
+      summary: Remove uma carga (Soft delete)
+      tags: [Cargos]
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Carga removida logicamente
+  /api/v1/cargos/{id}/status:
+    patch:
+      summary: Atualiza o status do kanban da carga
+      tags: [Cargos]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Status da carga atualizado
+
+  # ==========================================
+  # MÓDULO DE MATCHING E OFERTAS
+  # ==========================================
+  /api/v1/cargos/{id}/match/trigger:
+    post:
+      summary: Executa o algoritmo de matching e retorna motoristas elegíveis
+      tags: [Matching]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista ranqueada de motoristas compatíveis
+  /api/v1/cargos/{id}/offers:
+    post:
+      summary: Cria e envia ofertas de frete para motoristas selecionados
+      tags: [Offers]
+      security:
+        - bearerAuth: []
+      responses:
+        201:
+          description: Ofertas enviadas com sucesso
+  /api/v1/offers:
+    get:
+      summary: Lista as ofertas pendentes para o motorista autenticado
+      tags: [Offers]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista de ofertas
+  /api/v1/offers/{id}/accept:
+    post:
+      summary: Motorista aceita a oferta de frete
+      tags: [Offers]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Oferta aceita e status da carga atualizado
+  /api/v1/offers/{id}/decline:
+    post:
+      summary: Motorista recusa a oferta de frete
+      tags: [Offers]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Oferta recusada
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
