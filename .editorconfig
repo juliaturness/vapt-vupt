@@ -1,0 +1,45 @@
+# Informa às IDEs que este é o arquivo de configuração raiz e elas devem parar de procurar em pastas superiores
+root = true
+
+# ==========================================
+# Regras Gerais (Aplicadas a todos os arquivos)
+# ==========================================
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# ==========================================
+# Frontend / Web / Configurações (2 espaços)
+# ==========================================
+[*.{js,jsx,ts,tsx,html,css,scss,json,yml,yaml,xml}]
+indent_style = space
+indent_size = 2
+
+# ==========================================
+# Backend: Java (4 espaços - Padrão da comunidade)
+# ==========================================
+[*.java]
+indent_style = space
+indent_size = 4
+
+# ==========================================
+# Arquivos de Build (Maven / Gradle)
+# ==========================================
+[pom.xml]
+indent_style = space
+indent_size = 4
+
+[*.{gradle,gradle.kts}]
+indent_style = space
+indent_size = 4
+
+# ==========================================
+# Markdown (Documentação)
+# ==========================================
+[*.md]
+# O Markdown permite espaços em branco no final da linha para criar quebras de linha (hard line breaks)
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 2
