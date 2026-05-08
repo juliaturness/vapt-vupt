@@ -32,7 +32,7 @@ jobs:
     environment: staging
     steps:
       - name: Trigger Deploy Staging
-        run: echo "Substitua este passo pelo script de deploy no seu servidor de Staging (ex: SSH, AWS ECS, Heroku)"
+        run: echo "Substitua este passo pelo script de deploy no seu servidor de Staging"
 
   deploy-production:
     name: Deploy em Produção
