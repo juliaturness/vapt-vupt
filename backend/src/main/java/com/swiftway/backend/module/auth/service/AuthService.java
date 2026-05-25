@@ -3,9 +3,12 @@ package com.swiftway.backend.module.auth.service;
 
 
 import com.swiftway.backend.module.auth.domain.User;
+import com.swiftway.backend.module.auth.domain.UserRole;
 import com.swiftway.backend.module.auth.dto.AuthDtos.*;
 import com.swiftway.backend.module.auth.security.JwtService;
 import com.swiftway.backend.module.auth.security.RefreshTokenService;
+import com.swiftway.backend.module.driver.domain.Driver;
+import com.swiftway.backend.module.driver.repository.DriverRepository;
 import com.swiftway.backend.shared.exception.EmailAlreadyUsedException;
 import com.swiftway.backend.shared.exception.InvalidCredentialsException;
 import com.swiftway.backend.module.auth.repository.UserRepository;
@@ -15,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.swiftway.backend.shared.utils.CpfUtils.sanitize;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -22,6 +27,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DriverRepository driverRepository;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
 
@@ -39,6 +45,22 @@ public class AuthService {
 
         userRepository.save(user);
         log.info("New user registered: {} [{}]", user.getEmail(), user.getRole());
+
+        if (req.role() == UserRole.DRIVER) {
+            Driver driver = Driver.builder()
+                .user(user)
+                .fullName(req.fullName())
+                .cpf(sanitize(req.cpf()))
+                .phone(req.phone())
+                .cnhNumber(req.cnhNumber())
+                .cnhCategory(req.cnhCategory())
+                .cnhValidity(req.cnhValidity())
+                .available(false)
+                .grApproved(false)
+                .build();
+            driverRepository.save(driver);
+            log.info("Driver profile created for userId={}", user.getId());
+        }
 
         return issueTokenPair(user);
     }
@@ -86,5 +108,6 @@ public class AuthService {
         return TokenResponse.of(accessToken, refreshToken,
             jwtService.getAccessTokenTtlSeconds());
     }
+
 }
 
