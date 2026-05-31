@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface CargoMatchRepository extends JpaRepository<CargoMatch, UUID> {
 
     /** Motoristas elegíveis para uma carga, ordenados por score decrescente (como o índice). */
-    @Query("SELECT m FROM CargoMatch m WHERE m.cargo = :cargoId ORDER BY m.score DESC")
+    @Query("SELECT m FROM CargoMatch m WHERE m.cargo.id = :cargoId ORDER BY m.score DESC")
     Page<CargoMatch> findByCargoIdOrderByScoreDesc(@Param("cargoId") UUID cargoId, Pageable pageable);
 
     /** Todas as cargas em que um motorista foi avaliado. */

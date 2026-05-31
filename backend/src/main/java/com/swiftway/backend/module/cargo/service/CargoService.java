@@ -211,9 +211,11 @@ public class CargoService {
 
         if (!matches.isEmpty()) {
             cargo.setStatus(CargoStatus.OFERTA_ENVIADA);
-            cargoRepository.save(cargo);
+        } else {
+            cargo.setStatus(CargoStatus.AGUARDANDO);
+            log.warn("Nenhum motorista elegível para cargoId={} — revertendo para AGUARDANDO", cargoId);
         }
-
+        cargoRepository.save(cargo);
         return new MatchResultResponse(cargoId, matches.size(), motoristas);
     }
 

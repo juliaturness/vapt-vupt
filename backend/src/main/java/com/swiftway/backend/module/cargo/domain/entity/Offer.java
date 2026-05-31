@@ -7,6 +7,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -43,25 +44,25 @@ public class Offer {
     private String motivoRecusa;
 
     @Column(name = "expira_em", nullable = false)
-    private LocalDateTime expiraEm;
+    private OffsetDateTime expiraEm;
 
     @Column(name = "respondida_em")
-    private LocalDateTime respondidaEm;
+    private OffsetDateTime  respondidaEm;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private OffsetDateTime  createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private OffsetDateTime  updatedAt;
 
     @PrePersist
     void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        createdAt = OffsetDateTime .now();
+        updatedAt = OffsetDateTime .now();
     }
 
     @PreUpdate
     void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = OffsetDateTime .now();
     }
 }
