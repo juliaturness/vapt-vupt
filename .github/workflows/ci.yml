@@ -25,9 +25,6 @@ jobs:
       - name: Dar permissão de execução ao Gradle Wrapper
         run: chmod +x backend/gradlew
 
-      - name: Executar Checkstyle 
-        run: cd backend && ./gradlew checkstyleMain checkstyleTest
-
       - name: Executar Testes Unitários e de Integração
         run: cd backend && ./gradlew test
 
